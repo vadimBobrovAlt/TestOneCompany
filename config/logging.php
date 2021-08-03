@@ -100,6 +100,12 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'api_custom' => [
+            'driver' => 'daily',
+            'tap' => [App\Logging\CustomFormatter::class],
+            'path' => storage_path('logs/custom/log.log')
+        ],
     ],
 
 ];

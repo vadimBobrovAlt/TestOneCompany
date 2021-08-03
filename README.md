@@ -1,62 +1,356 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Test One Company
+### Описание
+Тестовое задание
+### Оглавление
+ ____
++ [Используемые технологии](#technologies-used)
++ [Порядок развертывания](#deployment-order)
++ [Описание АРI](#description-api)
++ [Структура БД](#database-structure)
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
+### Используемые технологии <a name="technologies-used"></a>
+ ____
+- php 7.3 +
+- Laravel 8
+- MySql
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Порядок развертывания <a name="deployment-order"></a>
+ ____
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. Установим зависимостей:
+```
+composer install
+```
+2. Создаем файл `.env`. Пример содержимого файла находится в файле `example.env`
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+3. Выполнить команды миграции и оптимизацию
 
-## Learning Laravel
+```
+php artisan migrate --seed
+php artisan optimize
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+4. Запускаем приложение на локальном устройстве:
+```
+php artisan serve
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Описание АРI <a name="description-api"></a>
+ ____
 
-## Laravel Sponsors
+#### Авторизация
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```
+POST /api/v1/auth/token
+```
+###### Заголовки (headers)
+Ключ|Значение
+--------|--------
+Accept| application/json
 
-### Premium Partners
+###### Параметры запроса
+Параметр|Описание|Тип
+--------|--------|---
+app_id| Ключ приложения | body
+password| Пароль приложения | body
+app_name| Название приложения | body
+###### Пример запроса
+Лимит запросов с одного IP - 5/min
+```
+POST /api/v1/auth/token
+{
+    "app_id":"86b2754c-c999-11eb-b8bc-0242ac130003",
+    "password":"26454b14-44ab-4c02-b4e3-f67e1626266e",
+    "app_name":"test user"
+}
+```
+###### Положительый ответ
+```
+{
+    "data": "1|gH0pFAE4kiAabLoUCcIdaPXLI9Ttf2jVkqo7kyWb",
+    "message": "Приложение успешно авторизовано"
+}
+```
+###### Ошибка
+```
+{
+    "message": "Ошибка авторизации"
+}
+```
+___
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
+#### Задачи (Tasks)
+____
 
-## Contributing
+###### Получение списка задач
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
+```
+GET /api/v1/tasks
+```
+###### Заголовки (headers)
+Ключ|Значение
+--------|--------
+Accept| application/json
+Authorization| Bearer ТОКЕН
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+###### Параметры запроса
+Параметр|Описание|Тип
+--------|--------|---
+limit| Максимальное полличество задач в ответе | query
+page| Номер страницы | query
+###### Пример запроса
+Лимит запросов с одного IP - 60/min
+```
+GET /api/v1/tasks?limit=2
+```
+###### Положительый ответ
+```
+{
+    "data": {
+        "current_page": 1,
+        "data": [
+            {
+                "id": 3,
+                "name": "task1",
+                "description": "da...",
+                "created_at": "2021-08-03 12:08:00",
+                "updated_at": "2021-08-03 12:08:00"
+            },
+            {
+                "id": 4,
+                "name": "task1",
+                "description": "da...",
+                "created_at": "2021-08-03 12:08:00",
+                "updated_at": "2021-08-03 12:08:00"
+            }
+        ],
+        "first_page_url": "http://127.0.0.1:8000/api/v1/tasks?page=1",
+        "from": 1,
+        "next_page_url": "http://127.0.0.1:8000/api/v1/tasks?page=2",
+        "path": "http://127.0.0.1:8000/api/v1/tasks",
+        "per_page": 2,
+        "prev_page_url": null,
+        "to": 2
+    },
+    "message": ""
+}
+```
+###### Ошибка
+```
+{
+    "message": "Ошибка"
+}
+```
+___
+###### Получение задачи по ID
 
-## Security Vulnerabilities
+```
+GET /api/v1/tasks/id
+```
+###### Заголовки (headers)
+Ключ|Значение
+--------|--------
+Accept| application/json
+Authorization| Bearer ТОКЕН
+###### Параметры запроса
+Параметр|Описание|Тип
+--------|--------|---
+id| id задачи | params
+###### Пример запроса
+Лимит запросов с одного IP - 60/min
+```
+GET /api/v1/tasks/3
+```
+###### Положительый ответ
+```
+{
+    "data": {
+        "id": 3,
+        "name": "task1",
+        "description": "da...",
+        "created_at": "2021-08-03 12:08:00",
+        "updated_at": "2021-08-03 12:08:00"
+    },
+    "message": ""
+}
+```
+###### Ошибка
+```
+{
+    "message": "Ошибка"
+}
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+___
+###### Создание задачи
 
-## License
+```
+POST /api/v1/tasks
+```
+###### Заголовки (headers)
+Ключ|Значение
+--------|--------
+Accept| application/json
+Authorization| Bearer ТОКЕН
+###### Параметры запроса
+Параметр|Описание|Тип
+--------|--------|---
+name| название задачи | body
+description| описание задачи | body
+###### Пример запроса
+Лимит запросов с одного IP - 60/min
+```
+POST /api/v1/tasks
+{
+    "name":"task name",
+    "description":"task description"
+}
+```
+###### Положительый ответ (201)
+```
+{
+    "data": {
+        "name": "task name",
+        "description": "task description",
+        "updated_at": "2021-08-03 05:08:47",
+        "created_at": "2021-08-03 05:08:47",
+        "id": 25
+    },
+    "message": "Задача успешно создана"
+}
+```
+###### Ошибка (400)
+```
+{
+    "message": "Ошибка валидации",
+    "data": {
+        "name": [
+            "The name field is required."
+        ],
+        "description": [
+            "The description field is required."
+        ]
+    }
+}
+```
+###### Ошибка (500)
+```
+{
+    "message": "Ошибка"
+}
+```
+___
+###### Обновление задачи
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
+PUT /api/v1/tasks
+```
+###### Заголовки (headers)
+Ключ|Значение
+--------|--------
+Accept| application/json
+Authorization| Bearer ТОКЕН
+###### Параметры запроса
+Параметр|Описание|Тип
+--------|--------|---
+name| название задачи | body
+description| описание задачи | body
+###### Пример запроса
+Лимит запросов с одного IP - 60/min
+```
+PUT /api/v1/tasks
+{
+    "name":"task name1",
+    "description":"task description1"
+}
+```
+###### Положительый ответ (201)
+```
+{
+    "data": {
+        "name": "task name1",
+        "description": "task description1",
+        "updated_at": "2021-08-03 05:08:47",
+        "created_at": "2021-08-03 05:09:13",
+        "id": 25
+    },
+    "message": "Задача успешно создана"
+}
+```
+###### Ошибка (400)
+```
+{
+    "message": "Ошибка валидации",
+    "data": {
+        "name": [
+            "The name field is required."
+        ],
+        "description": [
+            "The description field is required."
+        ]
+    }
+}
+```
+###### Ошибка (500)
+```
+{
+    "message": "Ошибка"
+}
+```
+___
+###### Удаление задачи
+
+```
+
+DELETE /api/v1/tasks/id
+```
+###### Заголовки (headers)
+Ключ|Значение
+--------|--------
+Accept| application/json
+Authorization| Bearer ТОКЕН
+###### Параметры запроса
+Параметр|Описание|Тип
+--------|--------|---
+id| id задачи | params
+###### Пример запроса
+Лимит запросов с одного IP - 60/min
+```
+DELETE /api/v1/tasks/3
+```
+###### Положительый ответ
+```
+{
+    "data": null,
+    "message": "Задача успешно удалена"
+}
+```
+
+###### Ошибка
+```
+{
+    "message": "Ошибка"
+}
+```
+___
+### Структура БД <a name="database-structure"></a>
+
+#### Пользователи (users)
+
+| Имя |  Назначение | Тип
+|----------------|:---------|:---------|
+| id | Идентификатор пользователя | bigint(20)
+| app_id  | Название приложения | varchar(255)
+| password	 | Пароль | varchar(255)
+
+#### Задачи (tasks)
+
+| Имя |  Назначение | Тип
+|----------------|:---------|:---------|
+| id | Идентификатор задачи |bigint(20)
+| name | Название |varchar(255)
+| description  | Описание |varchar(1000)
+| created_at | Дата создания |timestamp
+| updated_at |  Дата изменения |timestamp
